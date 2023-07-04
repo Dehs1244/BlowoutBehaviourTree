@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BlowoutBehaviourTree.Exceptions;
 
 namespace BlowoutBehaviourTree
 {
@@ -26,7 +27,7 @@ namespace BlowoutBehaviourTree
         {
             if (_childNode == null)
             {
-                throw new ApplicationException("InverterNode must have a child node!");
+                throw new BehaviourNodeException("InverterNode must have a child node!");
             }
 
             var result = _childNode.Tick();

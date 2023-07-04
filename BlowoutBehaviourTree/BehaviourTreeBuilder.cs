@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BlowoutBehaviourTree.Exceptions;
 
 namespace BlowoutBehaviourTree
 {
@@ -11,22 +12,23 @@ namespace BlowoutBehaviourTree
         /// Last created branch.
         /// </summary>
         private IBehaviourTreeNode curNode = null;
+        private BehaviourTreeChildBuilder _ChildBuilder => new BehaviourTreeChildBuilder(this);
 
         private Stack<IParentBehaviourTreeNode> parentNodeStack = new Stack<IParentBehaviourTreeNode>();
 
-        public BehaviourTreeBuilder Do(string name, Func<BehaviourTreeStatus> function)
+        internal IParentBehaviourTreeNode GetBuildingNode()
         {
             if (parentNodeStack.Count <= 0)
             {
-                throw new ApplicationException("Can't create an unnested ActionNode, it must be a leaf node.");
+                throw new BehaviourNodeBuilderException("Can't get parent node");
             }
 
-            var actionNode = new ActionNode(name, function);
-            parentNodeStack.Peek().AddChild(actionNode);
-            return this;
+            return parentNodeStack.Peek();
         }
 
-        public BehaviourTreeBuilder Condition(string name, Func<bool> condition)
+        public BehaviourTreeChildBuilder MakeDoScheme() => _ChildBuilder;
+
+        public BehaviourTreeChildBuilder Condition(string name, Func<bool> condition)
         {
             var conditionNode = new ConditionNode(name, condition);
             if (parentNodeStack.Count > 0)
@@ -35,7 +37,7 @@ namespace BlowoutBehaviourTree
             }
 
             parentNodeStack.Push(conditionNode);
-            return this;
+            return _ChildBuilder;
         }
 
         public BehaviourTreeBuilder Inverter(string name)
@@ -51,7 +53,7 @@ namespace BlowoutBehaviourTree
             return this;
         }
 
-        public BehaviourTreeBuilder Sequence(string name)
+        public BehaviourTreeChildBuilder Sequence(string name)
         {
             var sequenceNode = new SequenceNode(name);
 
@@ -61,7 +63,7 @@ namespace BlowoutBehaviourTree
             }
 
             parentNodeStack.Push(sequenceNode);
-            return this;
+            return _ChildBuilder;
         }
 
         public BehaviourTreeBuilder Parallel(string name, int numRequiredToFail, int numRequiredToSucceed)

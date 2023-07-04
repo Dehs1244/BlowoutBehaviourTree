@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BlowoutBehaviourTree.Exceptions;
 
 namespace BlowoutBehaviourTree
 {
@@ -25,7 +26,7 @@ namespace BlowoutBehaviourTree
         {
             if(_nodeExecute != null)
             {
-                throw new Exception("Condition must have one child! Use another Condition node");
+                throw new BehaviourNodeException("Condition must have one child! Use another Condition node");
             }
             _nodeExecute = child;
         }

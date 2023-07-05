@@ -24,6 +24,8 @@ namespace BlowoutBehaviourTree
             return this;
         }
 
+        public BehaviourTreeBuilder MakeWideScheme() => _root;
+
         public BehaviourTreeBuilder End()
         {
             return _root.End();
